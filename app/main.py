@@ -1,10 +1,18 @@
-# Importa a classe principal do FastAPI.
 from fastapi import FastAPI
 
-# Cria a aplicação. Este objeto "app" é o coração da API:
-# é nele que registramos todas as rotas (endpoints).
-# Os parâmetros title, description e version aparecem
-# automaticamente na documentação gerada pelo FastAPI.
+# Importamos o engine e a Base para criar as tabelas.
+from app.database import Base, engine
+
+# IMPORTANTE: precisamos importar o módulo models, mesmo sem usar
+# nada dele diretamente. É a importação que "registra" a classe Task
+# na Base. Sem ela, create_all não saberia que a tabela existe.
+from app import models  # noqa: F401
+
+# Cria no banco todas as tabelas registradas na Base que ainda
+# não existem. Se a tabela "tasks" já existir, nada é alterado.
+# (Mais adiante, usaremos Alembic para migrações profissionais.)
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
     title="TaskFlow API",
     description="API REST para gerenciamento de tarefas.",
@@ -12,11 +20,6 @@ app = FastAPI(
 )
 
 
-# O decorador @app.get("/health") diz ao FastAPI:
-# "quando alguém fizer uma requisição GET para o caminho /health,
-# execute a função logo abaixo".
 @app.get("/health")
 def health_check():
-    # Retornamos um dicionário Python. O FastAPI converte
-    # automaticamente para JSON na resposta.
     return {"status": "ok"}
