@@ -1,20 +1,18 @@
 from fastapi import FastAPI
 
-from app import models  # noqa: F401  (registra a tabela na Base)
+from app import models  # noqa: F401  (registra as tabelas na Base)
 from app.database import Base, engine
-# Importamos o router de tarefas.
-from app.routers import tasks
+from app.routers import auth, tasks
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="TaskFlow API",
-    description="API REST para gerenciamento de tarefas.",
-    version="0.2.0",
+    description="API REST para gerenciamento de tarefas com autenticação JWT.",
+    version="0.3.0",
 )
 
-# Registra o router na aplicação. A partir daqui, todas as
-# rotas definidas em tasks.py passam a existir na API.
+app.include_router(auth.router)
 app.include_router(tasks.router)
 
 

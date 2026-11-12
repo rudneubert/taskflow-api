@@ -1,3 +1,10 @@
+import os
+
+# Define o SECRET_KEY ANTES de importar o app, porque o app lê essa
+# variável no momento do import (app/config.py). setdefault só define
+# se ainda não existir. Assim os testes funcionam em qualquer máquina
+# e no CI, sem precisar do arquivo .env.
+os.environ.setdefault("SECRET_KEY", "chave-secreta-apenas-para-testes")
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -64,3 +71,23 @@ def client():
     # as tabelas, deixando o banco vazio para o próximo teste.
     app.dependency_overrides.clear()
     Base.metadata.drop_all(bind=test_engine)
+    
+
+# Fixture que entrega um client JÁ LOGADO.
+# Ela depende da fixture "client": o pytest resolve isso sozinho.
+@pytest.fixture()
+def auth_client(client):
+    credentials = {"email": "ana@example.com", "password": "senha12345"}
+
+    # Cadastra e faz login com um usuário padrão de teste.
+    client.post("/auth/register", json=credentials)
+    response = client.post(
+        "/auth/login",
+        # data= envia como formulário (o login não aceita JSON).
+        data={"username": credentials["email"], "password": credentials["password"]},
+    )
+    token = response.json()["access_token"]
+
+    # Adiciona o cabeçalho a TODAS as requisições seguintes deste client.
+    client.headers.update({"Authorization": f"Bearer {token}"})
+    return client
