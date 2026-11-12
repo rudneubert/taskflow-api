@@ -7,4 +7,4 @@ def test_health_check_returns_ok(client):
 
     # ASSERT: "assert" falha o teste se a condição for falsa.
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {"status": "quebrado"}
