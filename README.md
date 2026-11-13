@@ -5,8 +5,8 @@
 API REST para gerenciamento de tarefas, com autenticação JWT e
 isolamento de dados entre usuários.
 
-**Demo ao vivo:** _(link do deploy, adicionado na etapa 10.6)_
-**Documentação interativa:** _(link do deploy)_/docs
+**Demo ao vivo:** [taskflow-api-n29e.onrender.com](https://taskflow-api-n29e.onrender.com/docs)
+**Documentação interativa:** [Swagger UI](https://taskflow-api-n29e.onrender.com/docs)
 
 # Funcionalidades
 
