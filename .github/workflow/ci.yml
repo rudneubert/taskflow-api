@@ -1,0 +1,48 @@
+# Nome do workflow. Aparece na aba "Actions" do GitHub.
+name: CI
+
+# Quando o workflow roda:
+on:
+  # A cada push na branch main.
+  push:
+    branches: [main]
+  # A cada Pull Request que tenha a main como destino.
+  pull_request:
+    branches: [main]
+
+# Um workflow tem um ou mais jobs. Aqui temos um só, chamado "test".
+jobs:
+  test:
+    # Runner: máquina virtual Linux (Ubuntu) fornecida pelo GitHub.
+    # Mesmo que você use Windows, o CI roda em Linux. Isso é bom:
+    # prova que seu projeto funciona em mais de um sistema.
+    runs-on: ubuntu-latest
+
+    # Passos do job, executados em ordem.
+    steps:
+      # 1. Baixa o código do seu repositório para dentro do runner.
+      #    Sem este passo, a máquina começa vazia.
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Instala o Python na versão pedida.
+      #    "cache: pip" guarda as bibliotecas baixadas entre execuções,
+      #    deixando as próximas rodadas mais rápidas.
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.15"
+          cache: pip
+
+      # 3. Instala as dependências do projeto.
+      #    "run" executa um comando de terminal.
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Roda os testes com relatório de cobertura.
+      #    Se algum teste falhar, o pytest retorna erro e o job inteiro
+      #    fica vermelho. É assim que o CI "sabe" que algo quebrou.
+      - name: Rodar testes
+        run: pytest --cov=app --cov-report=term-missing
