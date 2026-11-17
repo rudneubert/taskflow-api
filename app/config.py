@@ -20,12 +20,14 @@ class Settings(BaseSettings):
     # Tempo de vida do token. Depois disso, é preciso fazer login de novo.
     access_token_expire_minutes: int = 30
 
-
-# Instância única, importada pelo resto do projeto.
-settings = Settings()
-
     # Lista de origens (sites) autorizadas a chamar a API pelo navegador.
     # Por padrão, só o servidor de desenvolvimento do Vite.
     # Em produção, definimos a variável CORS_ORIGINS no Render com o
     # endereço do front-end, separando vários por vírgula.
     cors_origins: str = "http://localhost:5173"
+
+
+
+# Instância única, importada pelo resto do projeto.
+settings = Settings()
+
